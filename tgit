@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+command=$1
+file=$2
+
+if [ "$command" == "" ] || [ "$file" == "" ]; then
+    echo "Usage: tgit <command> <file>"
+    echo "Commands: add, rm, diff, f (file)"
+    echo "Example: tgit add Test.java"
+    exit 1
+fi
+
+function changed_file(){
+    file=${1}
+    git st -s | grep ${file}|awk '{print $2}'
+}
+
+if [ "$command" == "add" ]; then
+    changed_file $2|xargs git add
+elif [ "$command" == "rm" ]; then
+    changed_file $2|xargs rm
+elif [ "$command" == "diff" ]; then
+    changed_file $2|xargs git diff
+elif [ "$command" == "checkout" ] || [ "$command" == "co" ]; then
+    changed_file $2|xargs git checkout
+elif [ "$command" == "file" ] || [ "$command" == "f" ]; then
+    changed_file $2
+else
+    echo "Unrecognized command: $commad"
+    exit 1
+fi
